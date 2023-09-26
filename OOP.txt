@@ -1,0 +1,44 @@
+using System;
+class Student{
+    public string name = "Glenn";
+    public int age = 22;
+    public string schoolID = "A1000";
+    public string subject = "OOP";
+    public string course = "BSIT";
+}
+
+class School : Student{
+    public string school_name(){
+        return"EPCST";
+    }
+}
+
+
+class Subject : School{
+
+    public string subject_code(){
+        return"123";
+    }
+
+}
+
+class Course : Subject {
+
+}
+
+
+
+class HelloWorld {
+  static void Main() {
+      Course coz = new Course();
+      Console.WriteLine("name:" + coz.age);
+      Console.WriteLine("StudentID:" + coz.schoolID);
+      Console.WriteLine("Course:" + coz.course);
+      Console.WriteLine("School Name:" + coz.school_name());
+      Console.WriteLine("Subject Name:" + coz.subject);
+      Console.WriteLine("Subject Code:" + coz.subject_code());
+
+    Console.WriteLine("Hello World");
+
+  }
+}
