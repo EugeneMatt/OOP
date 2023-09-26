@@ -1,15 +1,15 @@
 using System;
 class Student{
-    public string name = "Glenn";
-    public int age = 22;
-    public string schoolID = "A1000";
-    public string subject = "OOP";
-    public string course = "BSIT";
+    public string name = "Hinata Shoyo";
+    public int age = 20;
+    public string school_id = "21-0524";
+    public string subject = "Database Management System 2";
+    public string course = "BS Information & Technology";
 }
 
 class School : Student{
     public string school_name(){
-        return"EPCST";
+        return"Eastwoods Professional College Science & Technology";
     }
 }
 
@@ -17,7 +17,7 @@ class School : Student{
 class Subject : School{
 
     public string subject_code(){
-        return"123";
+        return"DBMS2113";
     }
 
 }
@@ -27,18 +27,15 @@ class Course : Subject {
 }
 
 
-
-class HelloWorld {
+class Information{
   static void Main() {
-      Course coz = new Course();
-      Console.WriteLine("name:" + coz.age);
-      Console.WriteLine("StudentID:" + coz.schoolID);
-      Console.WriteLine("Course:" + coz.course);
-      Console.WriteLine("School Name:" + coz.school_name());
-      Console.WriteLine("Subject Name:" + coz.subject);
-      Console.WriteLine("Subject Code:" + coz.subject_code());
-
-    Console.WriteLine("Hello World");
+      Course stud = new Course();
+      Console.WriteLine("Name:" + stud.age);
+      Console.WriteLine("StudentID:" + stud.school_id);
+      Console.WriteLine("Course:" + stud.course);
+      Console.WriteLine("School Name:" + stud.school_name());
+      Console.WriteLine("Subject Name:" + stud.subject);
+      Console.WriteLine("Subject Code:" + stud.subject_code());
 
   }
 }
