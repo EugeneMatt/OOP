@@ -1,0 +1,52 @@
+# OOP
+/******************************************************************************
+
+Welcome to GDB Online.
+GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
+C#, OCaml, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
+Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
+using System;
+
+public class Student
+{
+    public string Name;
+    public int Age;
+    public string SchoolID;
+    public string Subject;
+    public string Course;
+
+    public Student(string name, string schoolID, string subject, string course, int age)
+    {
+        Name = name;
+        SchoolID = schoolID;
+        Subject = subject;
+        Course = course;
+        Age = age;
+        
+
+    } public void info(){
+        Console.WriteLine(Name + SchoolID + Subject + Course + Age);
+    } 
+}
+
+class HelloWorld
+{
+    static void Main()
+    
+    {
+        Student sunoo = new Student("Sunoo ", "EPCST-1 ", "DBMS1", "IT ", 19);
+        Student hee = new Student("Heeseung ", "EPCST-2 ", "OOPL", "IT ", 21);
+        Student jake = new Student("Jake ", "125", "EPCST-3 ", "Networking ", 20);
+        Student jay = new Student("Jay ", "126 ", "EPCST-4 ", "IPT ", 20);
+        Student jungwon = new Student("jungwon ", "127 ", "EPCST-5 ", "Free Elective ", 18);
+        
+        sunoo.info();
+        hee.info();
+        jake.info();
+        jay.info();
+        jungwon.info();
+       
+    }
+}
