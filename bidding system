@@ -100,7 +100,7 @@ class Auction
     {
         if (biddingActive)
         {
-            Console.WriteLine("auction is currently active.");
+            Console.WriteLine("Auction is currently active.");
             return;
         }
 
@@ -145,7 +145,7 @@ class Auction
         if (biddingActive)
         {
             biddingActive = false;
-            Console.WriteLine($"Bidding has been stopped by {Admin.Username}.");
+            Console.WriteLine($"Bidding has been ended by {Admin.Username}.");
         }
         else
         {
@@ -156,7 +156,7 @@ class Auction
     public void StartBidding()
     {
         biddingActive = true;
-        Console.WriteLine($"Bidding has been started by {Admin.Username}.");
+        Console.WriteLine($"Bidding has been started offer your item by {Admin.Username}.");
     }
 
     public void ShowBiddingHistory()
