@@ -1,11 +1,4 @@
-/******************************************************************************
 
-Welcome to GDB Online.
-GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
-C#, OCaml, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
-Code, Compile, Run and Debug online from anywhere in world.
-
-*******************************************************************************/
 using System;
 using System.Collections.Generic;
 
@@ -189,7 +182,7 @@ class Program
             if (input == "start")
             {
                 auction = admin.StartBidding();
-                Console.WriteLine("Auction has started. Admin can add items or stop bidding.");
+                Console.WriteLine("Auction started. Admin can offer more items or stop bidding.");
                 break;
             }
             else if (input == "exit")
@@ -258,7 +251,7 @@ class Program
                     Console.WriteLine($"Item {i}: {auction.items[i].Name} - Current Price: ${auction.items[i].Price}");
                 }
 
-                Console.WriteLine("Enter 'bid' to place a bid, 'stop' to stop bidding, or 'exit' to exit:");
+                Console.WriteLine("Enter 'bid' to place a bid, 'end' to stop bidding, or 'exit' to exit:");
                 string bidderInput = Console.ReadLine().ToLower();
 
                 if (bidderInput == "bid")
@@ -270,7 +263,7 @@ class Program
                     User bidder = new User("Bidder");
                     auction.PlaceBid(bidder, itemIndex, bidAmount);
                 }
-                else if (bidderInput == "stop")
+                else if (bidderInput == "end")
                 {
                     break;
                 }
