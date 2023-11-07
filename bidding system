@@ -199,9 +199,9 @@ class Program
             if (input == "add")
             {
                 Seller seller = new Seller("Seller1");
-                Console.Write("Enter item name: ");
+                Console.Write("Your item name: ");
                 string itemName = Console.ReadLine();
-                Console.Write("Enter starting price: ");
+                Console.Write("Starting price: ");
                 double startingPrice = double.Parse(Console.ReadLine());
                 Console.Write("Enter quantity: ");
                 int quantity = int.Parse(Console.ReadLine());
@@ -258,7 +258,7 @@ class Program
                 {
                     Console.Write("Enter item number to bid on: ");
                     int itemIndex = int.Parse(Console.ReadLine());
-                    Console.Write("Enter bid amount: ");
+                    Console.Write("Enter bid budget: ");
                     double bidAmount = double.Parse(Console.ReadLine());
                     User bidder = new User("Bidder");
                     auction.PlaceBid(bidder, itemIndex, bidAmount);
