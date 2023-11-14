@@ -1,0 +1,281 @@
+using System;
+using System.Collections.Generic;
+
+    class User
+{
+    public string Username { get; set; }
+
+    public User(string username)
+    {
+        Username = username;
+    }
+}
+
+class Admin : User
+{
+    public Admin(string username) : base(username)
+    {
+    }
+
+    public Auction StartBidding()
+    {
+        return new Auction(this);
+    }
+
+    public void StopBidding(Auction auction)
+    {
+        auction.StopBidding();
+    }
+}
+
+class Seller : User
+{
+    public Seller(string username) : base(username)
+    {
+    }
+
+    public void PutItem(Auction auction, Item item, double startingPrice, int quantity)
+    {
+        auction.AddItem(this, item, startingPrice, quantity);
+    }
+}
+
+class Item
+{
+    public string Name { get; set; }
+    public double Price { get; set; }
+    public int Quantity { get; set; }
+    public string Status { get; set; }
+
+    public Item(string name, double price, int quantity)
+    {
+        Name = name;
+        Price = price;
+        Quantity = quantity;
+        Status = "Available";
+    }
+}
+
+class History
+{
+    public Item Item { get; set; }
+    public List<double> BiddingCosts;
+
+    public History(Item item)
+    {
+        Item = item;
+        BiddingCosts = new List<double>();
+    }
+
+    public void AddBiddingCost(double cost)
+    {
+        BiddingCosts.Add(cost);
+    }
+}
+
+class Auction
+{
+    public Admin Admin { get; set; }
+    public List<Item> items;
+    public List<History> itemHistories;
+    public bool biddingActive;
+
+    public Auction(Admin admin)
+    {
+        Admin = admin;
+        items = new List<Item>();
+        itemHistories = new List<History>();
+        biddingActive = false;
+    }
+
+    public void AddItem(Seller seller, Item item, double startingPrice, int quantity)
+    {
+        if (biddingActive)
+        {
+            Console.WriteLine("Cannot add items while the auction is active.");
+            return;
+        }
+
+        items.Add(item);
+        itemHistories.Add(new History(item));
+        Console.WriteLine($"{seller.Username} added item {item.Name} to the auction.");
+        Console.WriteLine($"Starting price: ${startingPrice}");
+        Console.WriteLine($"Available quantity: {quantity}");
+    }
+
+    public void PlaceBid(User bidder, int itemIndex, double amount)
+    {
+        if (!biddingActive)
+        {
+            Console.WriteLine("Bidding is not active.");
+            return;
+        }
+
+        if (itemIndex >= 0 && itemIndex < items.Count)
+        {
+            Item item = items[itemIndex];
+            if (amount > item.Price && item.Quantity > 0)
+            {
+                item.Price = amount;
+                item.Quantity--;
+                itemHistories[itemIndex].AddBiddingCost(amount);
+                Console.WriteLine($"{bidder.Username} placed a bid of ${amount} on {item.Name}");
+            }
+            else
+            {
+                Console.WriteLine($"Bid of ${amount} on {item.Name} is not valid or not higher than the current price.");
+            }
+        }
+        else
+        {
+            Console.WriteLine("Invalid item index.");
+        }
+    }
+
+    public void StopBidding()
+    {
+        if (biddingActive)
+        {
+            biddingActive = false;
+            Console.WriteLine($"Bidding has been stopped by {Admin.Username}.");
+        }
+        else
+        {
+            Console.WriteLine("Bidding is not active.");
+        }
+    }
+
+    public void StartBidding()
+    {
+        biddingActive = true;
+        Console.WriteLine($"Bidding has been started by {Admin.Username}.");
+    }
+
+    public void ShowBiddingHistory()
+    {
+        Console.WriteLine("Bidding History:");
+        for (int i = 0; i < items.Count; i++)
+        {
+            Console.WriteLine($"Item: {items[i].Name}");
+            Console.WriteLine("Bidding Costs:");
+            foreach (var cost in itemHistories[i].BiddingCosts)
+            {
+                Console.WriteLine($"Bid amount: ${cost}");
+            }
+        }
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        Admin admin = new Admin("Admin1");
+        Auction auction = null;
+
+        while (true)
+        {
+            Console.WriteLine("Enter 'start' to start the auction or 'exit' to exit:");
+            string input = Console.ReadLine().ToLower();
+
+            if (input == "start")
+            {
+                auction = admin.StartBidding();
+                Console.WriteLine("Auction has started. Admin can add items or stop bidding.");
+                break;
+            }
+            else if (input == "exit")
+            {
+                return;
+            }
+        }
+
+        while (true)
+        {
+            Console.WriteLine("Enter 'add' to add an item, 'stop' to stop bidding, or 'quit' to exit:");
+            string input = Console.ReadLine().ToLower();
+
+            if (input == "add")
+            {
+                Seller seller = new Seller("Seller1");
+                Console.Write("Enter item name: ");
+                string itemName = Console.ReadLine();
+                Console.Write("Enter starting price: ");
+                double startingPrice = double.Parse(Console.ReadLine());
+                Console.Write("Enter quantity: ");
+                int quantity = int.Parse(Console.ReadLine());
+                Item item = new Item(itemName, startingPrice, quantity);
+                seller.PutItem(auction, item, startingPrice, quantity);
+            }
+            else if (input == "stop")
+            {
+                admin.StopBidding(auction);
+                break;
+            }
+            else if (input == "quit")
+            {
+                break;
+            }
+        }
+
+        while (auction.Admin != null) // Admin interacts with the auction
+        {
+            Console.WriteLine("Admin can choose to start or stop the auction.");
+            Console.WriteLine("Enter 'start' to start the auction, 'stop' to stop it, or 'exit' to exit:");
+            string adminInput = Console.ReadLine().ToLower();
+            if (adminInput == "start")
+            {
+                auction.StartBidding();
+                Console.WriteLine("Auction has started.");
+            }
+            else if (adminInput == "stop")
+            {
+                auction.StopBidding();
+                break;
+            }
+            else if (adminInput == "exit")
+            {
+                auction.Admin = null;
+                break;
+            }
+        }
+
+        while (auction.Admin == null) // Bidders interact with the auction
+        {
+            if (auction.Admin == null)
+            {
+                Console.WriteLine("Bidding is active. Bidders can place bids.");
+                for (int i = 0; i < auction.items.Count; i++)
+                {
+                    Console.WriteLine($"Item {i}: {auction.items[i].Name} - Current Price: ${auction.items[i].Price}");
+                }
+
+                Console.WriteLine("Enter 'bid' to place a bid, 'stop' to stop bidding, or 'exit' to exit:");
+                string bidderInput = Console.ReadLine().ToLower();
+
+                if (bidderInput == "bid")
+                {
+                    Console.Write("Enter item number to bid on: ");
+                    int itemIndex = int.Parse(Console.ReadLine());
+                    Console.Write("Enter bid amount: ");
+                    double bidAmount = double.Parse(Console.ReadLine());
+                    User bidder = new User("Bidder");
+                    auction.PlaceBid(bidder, itemIndex, bidAmount);
+                }
+                else if (bidderInput == "stop")
+                {
+                    break;
+                }
+                else if (bidderInput == "exit")
+                {
+                    auction.Admin = null;
+                    break;
+                }
+            }
+        }
+
+        Console.WriteLine("Auction has ended.");
+        auction.ShowBiddingHistory();
+    }
+}
+
