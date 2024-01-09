@@ -1,0 +1,222 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+class User {
+    public String username;
+
+    public User(String username) {
+        this.username = username;
+    }
+}
+
+class Admin extends User {
+    public Admin(String username) {
+        super(username);
+    }
+
+    public Auction startBidding() {
+        return new Auction(this);
+    }
+
+    public void stopBidding(Auction auction) {
+        auction.stopBidding();
+    }
+}
+
+class Seller extends User {
+    public Seller(String username) {
+        super(username);
+    }
+
+    public void putItem(Auction auction, Item item, double startingPrice, int quantity) {
+        auction.addItem(this, item, startingPrice, quantity);
+    }
+}
+
+class Item {
+    public String name;
+    public double price;
+    public int quantity;
+    public String status;
+
+    public Item(String name, double price, int quantity) {
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+        this.status = "Available";
+    }
+}
+
+class History {
+    public Item item;
+    public List<Double> biddingCosts;
+
+    public History(Item item) {
+        this.item = item;
+        this.biddingCosts = new ArrayList<>();
+    }
+
+    public void addBiddingCost(double cost) {
+        this.biddingCosts.add(cost);
+    }
+}
+
+class Auction {
+    public Admin admin;
+    public List<Item> items;
+    public List<History> itemHistories;
+    public boolean biddingActive;
+
+    public Auction(Admin admin) {
+        this.admin = admin;
+        this.items = new ArrayList<>();
+        this.itemHistories = new ArrayList<>();
+        this.biddingActive = false;
+    }
+
+    public void addItem(Seller seller, Item item, double startingPrice, int quantity) {
+        if (biddingActive) {
+            System.out.println("Auction is currently active.");
+            return;
+        }
+
+        items.add(item);
+        itemHistories.add(new History(item));
+        System.out.println(seller.username + " added item " + item.name + " to the auction.");
+        System.out.println("Starting price: $" + startingPrice);
+        System.out.println("Available quantity: " + quantity);
+    }
+
+    public void placeBid(User bidder, int itemIndex, double amount) {
+        if (!biddingActive) {
+            System.out.println("Bidding is not active.");
+            return;
+        }
+
+        if (itemIndex >= 0 && itemIndex < items.size()) {
+            Item item = items.get(itemIndex);
+            if (amount > item.price && item.quantity > 0) {
+                item.price = amount;
+                item.quantity--;
+                itemHistories.get(itemIndex).addBiddingCost(amount);
+                System.out.println(bidder.username + " placed a bid of $" + amount + " on " + item.name);
+            } else {
+                System.out.println("Bid of $" + amount + " on " + item.name + " is not valid or not higher than the current price.");
+            }
+        } else {
+            System.out.println("Invalid item index.");
+        }
+    }
+
+    public void stopBidding() {
+        if (biddingActive) {
+            biddingActive = false;
+            System.out.println("Bidding has been ended by " + admin.username + ".");
+        } else {
+            System.out.println("Bidding is not active.");
+        }
+    }
+
+    public void startBidding() {
+        biddingActive = true;
+        System.out.println("Bidding has been started offer your item by " + admin.username + ".");
+    }
+
+    public void showBiddingHistory() {
+        System.out.println("History:");
+        for (int i = 0; i < items.size(); i++) {
+            System.out.println("Item: " + items.get(i).name);
+            System.out.println("Bidding Costs:");
+            for (Double cost : itemHistories.get(i).biddingCosts) {
+                System.out.println("Bid amount: $" + cost);
+            }
+        }
+    }
+}
+
+public class Program {
+    public static void main(String[] args) {
+        Admin admin = new Admin("Admin1");
+        Auction auction = null;
+
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("Enter 'start' to start the auction or 'exit' to exit:");
+            String input = scanner.nextLine().toLowerCase();
+
+            if (input.equals("start")) {
+                auction = admin.startBidding();
+                System.out.println("Auction started. Admin can offer more items or stop bidding.");
+                break;
+            } else if (input.equals("exit")) {
+                return;
+            }
+        }
+
+        while (true) {
+            System.out.println("Enter 'add' to add an item, 'end' to stop bidding, or 'quit' to exit:");
+            String input = scanner.nextLine().toLowerCase();
+
+            if (input.equals("add")) {
+                Seller seller = new Seller("Seller1");
+                System.out.print("Your item name: ");
+                String itemName = scanner.nextLine();
+                System.out.print("Starting price: ");
+                double startingPrice = Double.parseDouble(scanner.nextLine());
+                System.out.print("Enter quantity: ");
+                int quantity = Integer.parseInt(scanner.nextLine());
+                Item item = new Item(itemName, startingPrice, quantity);
+                seller.putItem(auction, item, startingPrice, quantity);
+            } else if (input.equals("end")) {
+                admin.stopBidding(auction);
+                break;
+            } else if (input.equals("quit")) {
+                break;
+            }
+        }
+
+        while (auction.admin != null) {
+            System.out.println("Admin can choose to start or stop the auction.");
+            System.out.println("Enter 'start' to start the auction, 'end' to stop it, or 'exit' to exit:");
+            String adminInput = scanner.nextLine().toLowerCase();
+            if (adminInput.equals("start")) {
+                auction.startBidding();
+                System.out.println("Auction started.");
+            } else if (adminInput.equals("end")) {
+                auction.stopBidding();
+                break;
+            } else if (adminInput.equals("exit")) {
+                auction.admin = null;
+                break;
+            }
+        }
+
+        while (auction.admin == null) {
+            if (auction.admin == null) {
+                System.out.println("Bidding is active. Place your bids.");
+                for (int i = 0; i < auction.items.size(); i++) {
+                    System.out.println("Item " + i + ": " + auction.items.get(i).name +
+                            " - Current Price: $" + auction.items.get(i).price);
+                }
+
+                System.out.println("Enter 'bid' to place a bid, 'end' to stop bidding, or 'exit' to exit:");
+                String bidderInput = scanner.nextLine().toLowerCase();
+
+                if (bidderInput.equals("bid")) {
+                    System.out.print("Enter item number to bid on: ");
+                    int itemIndex = Integer.parseInt(scanner.nextLine());
+                    System.out.print("Enter bid budget: ");
+                    double bidAmount = Double.parseDouble(scanner.nextLine());
+                    User bidder = new User("Bidder");
+                    auction.placeBid(bidder, itemIndex, bidAmount);
+                } else if (bidderInput.equals("end")) {
+                    break;
+                } else if (bidderInput.equals("exit")) {
+                    auction.admin = null;
+                    break;
+                }
+            }
+        
+
