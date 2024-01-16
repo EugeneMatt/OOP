@@ -1,0 +1,144 @@
+
+import java.util.*;
+
+class Item {
+    private String name;
+    private double currentBid;
+    private String highestBidder;
+    private List<Bid> bidHistory;
+
+    public Item(String name, double initialBid) {
+        this.name = name;
+        this.currentBid = initialBid;
+        this.highestBidder = "No bidder";
+        this.bidHistory = new ArrayList<>();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public double getCurrentBid() {
+        return currentBid;
+    }
+
+    public String getHighestBidder() {
+        return highestBidder;
+    }
+
+    public List<Bid> getBidHistory() {
+        return bidHistory;
+    }
+
+    public void placeBid(double bidAmount, String bidderName) {
+        if (bidAmount > currentBid) {
+            Bid bid = new Bid(bidAmount, bidderName);
+            bidHistory.add(bid);
+
+            currentBid = bidAmount;
+            highestBidder = bidderName;
+
+            System.out.println("Bid placed successfully.");
+        } else {
+            System.out.println("Bid amount must be higher than the current bid.");
+        }
+    }
+}
+
+class Bid {
+    private double bidAmount;
+    private String bidderName;
+
+    public Bid(double bidAmount, String bidderName) {
+        this.bidAmount = bidAmount;
+        this.bidderName = bidderName;
+    }
+
+    public double getBidAmount() {
+        return bidAmount;
+    }
+
+    public String getBidderName() {
+        return bidderName;
+    }
+}
+
+class BiddingSystem {
+    private Map<String, Item> items;
+
+    public BiddingSystem() {
+        items = new HashMap<>();
+    }
+
+    public void addItem(Item item) {
+        items.put(item.getName(), item);
+    }
+
+    public void displayItems() {
+        System.out.println("Available items for bidding:");
+        for (Item item : items.values()) {
+            System.out.println(item.getName() + " - Current Bid: $" + item.getCurrentBid() +
+                    " - Highest Bidder: " + item.getHighestBidder());
+        }
+    }
+
+    public void displayBidHistory(String itemName) {
+        Item selectedItem = items.get(itemName);
+        if (selectedItem != null) {
+            System.out.println("Bid history for " + itemName + ":");
+            for (Bid bid : selectedItem.getBidHistory()) {
+                System.out.println("Bid Amount: $" + bid.getBidAmount() + " - Bidder: " + bid.getBidderName());
+            }
+        } else {
+            System.out.println("Item not found. Please enter a valid item name.");
+        }
+    }
+
+    public void startBidding() {
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            displayItems();
+            System.out.println("Enter the name of the item you want to bid on (type 'exit' to end):");
+            String itemName = scanner.nextLine();
+
+            if (itemName.equalsIgnoreCase("exit")) {
+                break;
+            }
+
+            Item selectedItem = items.get(itemName);
+            if (selectedItem != null) {
+                System.out.println("Enter your bid amount for " + itemName + ": $");
+                double bidAmount = scanner.nextDouble();
+                scanner.nextLine(); // consume the newline character
+
+                System.out.println("Enter your name:");
+                String bidderName = scanner.nextLine();
+
+                selectedItem.placeBid(bidAmount, bidderName);
+            } else {
+                System.out.println("Item not found. Please enter a valid item name.");
+            }
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        BiddingSystem biddingSystem = new BiddingSystem();
+
+        // Adding items to the bidding system
+        biddingSystem.addItem(new Item("Item1", 50.0));
+        biddingSystem.addItem(new Item("Item2", 75.0));
+        biddingSystem.addItem(new Item("Item3", 100.0));
+
+        // Start the bidding process
+        biddingSystem.startBidding();
+
+        // Display bid history for a specific item
+        System.out.println("Enter the name of the item to view bid history:");
+        Scanner scanner = new Scanner(System.in);
+        String itemName = scanner.nextLine();
+        biddingSystem.displayBidHistory(itemName);
+    }
+}
